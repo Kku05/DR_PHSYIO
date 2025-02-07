@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book an Appointment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5b07d0;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4a05a8;
+        }
+        .booked {
+            color: red;
+        }
+        nav {
+            background-color: #5b07d0;
+            padding: 1rem;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        nav ul {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #5b07d0;
+        }
+        nav ul li {
+            margin-bottom: 10px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: block;
+            padding: 10px;
+        }
+        nav ul li a:hover {
+            background-color: #4a05a8;
+            border-radius: 4px;
+        }
+        .menu-toggle {
+            display: block;
+            cursor: pointer;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        @media (min-width: 769px) {
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">DR.PHYSIO</div>
+        <div class="menu-toggle">☰ Menu</div>
+        <ul>
+            <li><a href="front.html">Home</a></li>
+            <li><a href="index.html">Room</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h2>Book an Appointment</h2>
+        <form id="appointmentForm">
+            <div class="form-group">
+                <label for="doctor">Select Doctor:</label>
+                <select id="doctor" required>
+                    <option value="">Select Doctor</option>
+                    <option value="dr_smith">Dr. Smith</option>
+                    <option value="dr_jones">Dr. Jones</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Preferred Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Preferred Time:</label>
+                <select id="time" required>
+                    <option value="">Select Time</option>
+                </select>
+            </div>
+            <button type="submit">Book Appointment</button>
+        </form>
+    </div>
+    <script>
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            const navUl = document.querySelector('nav ul');
+            navUl.style.display = navUl.style.display === 'flex' ? 'none' : 'flex';
+        });
+        // Predefined availability for each doctor
+        const doctorAvailability = {
+            dr_smith: {
+                dates: [],
+                times: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+            },
+            dr_jones: {
+                dates: [],
+                times: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+            }
+        };
+
+        // Function to update available dates
+        function updateAvailableDates() {
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 3);
+
+            const dates = [];
+            for (let d = new Date(today); d <= maxDate; d.setDate(d.getDate() + 1)) {
+                dates.push(d.toISOString().split('T')[0]);
+            }
+
+            Object.keys(doctorAvailability).forEach(doctor => {
+                doctorAvailability[doctor].dates = dates;
+            });
+        }
+
+        // Update available dates and times based on selected doctor
+        document.getElementById('doctor').addEventListener('change', function() {
+            const selectedDoctor = this.value;
+            const dateInput = document.getElementById('date');
+            const timeSelect = document.getElementById('time');
+
+            if (selectedDoctor) {
+                const availability = doctorAvailability[selectedDoctor];
+
+                // Update date input
+                dateInput.min = availability.dates[0];
+                dateInput.max = availability.dates[availability.dates.length - 1];
+                dateInput.value = '';
+
+                // Clear time select
+                timeSelect.innerHTML = '<option value="">Select Time</option>';
+            } else {
+                dateInput.min = '';
+                dateInput.max = '';
+                dateInput.value = '';
+                timeSelect.innerHTML = '<option value="">Select Time</option>';
+            }
+        });
+
+        // Fetch booked appointments and update time options
+        document.getElementById('date').addEventListener('change', async function() {
+            const selectedDoctor = document.getElementById('doctor').value;
+            const selectedDate = this.value;
+            const timeSelect = document.getElementById('time');
+
+            if (selectedDoctor && selectedDate) {
+                const response = await fetch(`/appointments?doctor=${selectedDoctor}&date=${selectedDate}`);
+                const bookedAppointments = await response.json();
+
+                const bookedTimes = bookedAppointments.map(appointment => appointment.time);
+                const availability = doctorAvailability[selectedDoctor];
+
+                // Update time select
+                timeSelect.innerHTML = '<option value="">Select Time</option>';
+                availability.times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    if (bookedTimes.includes(time)) {
+                        option.classList.add('booked');
+                        option.disabled = true;
+                    }
+                    timeSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Retrieve user information from localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('name').value = user.name;
+            document.getElementById('email').value = user.email;
+        }
+
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                doctor: document.getElementById('doctor').value,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value
+            };
+            try {
+                const response = await fetch('/appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Appointment booked successfully! Check your email for confirmation.');
+                } else {
+                    alert('Error booking appointment: Refresh the page, ' + data.message);
+                }
+            } catch (error) {
+                alert('Error booking appointment');
+            }
+        });
+
+        // Initialize available dates
+        updateAvailableDates();
+    </script>
+</body>
+</html>

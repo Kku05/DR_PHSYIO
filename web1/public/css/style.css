@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* 33B816 */
+html {
+    font-size: 10px;
+}
+body {
+    background: url('../images/background.png') no-repeat center center fixed;
+    background-size: cover;
+    font-size: 1.6rem;
+    font-family: "Lora", serif;
+}
+ul li {
+    list-style: none;
+}
+
+/* || standard fonts */
+.lg-h-font {
+    font-size: 3.2rem;
+}
+.h-font {
+    font-size: 1.9rem;
+}
+.p-font {
+    font-size: 1.4rem;
+}
+.s-font {
+    font-size: 1rem;
+}
+
+/* || styling main container */
+.main-container {
+    height: 100vh;
+    display: flex;
+}
+
+/* || styling caller list - side menu*/
+.caller-list-heading {
+    margin: 1rem 1.5rem;
+}
+.caller-list-wrapper {
+    flex-basis: 30rem;
+    border-right: 1px solid black;
+    height: 100%;
+    background: white;
+}
+.caller-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #5b07d0;
+    margin: .5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.6rem;
+}
+
+/* || video call container styling */
+.video-call-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.video-streams {
+    display: flex;
+    gap: 2rem;
+}
+.local-video,
+.remote-video {
+    flex: 1;
+    width: 50rem;
+    min-height: 40rem;
+    max-height: 50rem;
+    background: black;
+    overflow: hidden;
+}
+
+.local-video video,
+.remote-video video {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+}
+
+#localVideo {
+    transform: scaleX(-1);
+}
+
+.call {
+    border: none;
+    outline: none;
+    width: 8rem;  /* Increased width for rectangular shape */
+    height: 4rem; /* Adjusted height */
+    background: rgb(228, 9, 9);
+    box-shadow: 0 0 15px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;  /* Changed from 50% to 4px for rectangular shape */
+    margin: 2rem 0;
+    cursor: pointer;
+    display: flex;      /* Added for text centering */
+    align-items: center;    /* Added for vertical centering */
+    justify-content: center; /* Added for horizontal centering */
+}
+
+.call-btn {
+    border: none;
+    background: #007bff; /* Add background color */
+    color: white; /* Text color */
+    padding: 8px 16px; /* Add padding */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+}
+
+.call-btn:hover {
+    background: #21d610; /* Darker shade on hover */
+}
+
+.d-none {
+    display: none;
+}
+
+.username-input {
+    margin: 2rem 0;
+}
+.username-input input {
+    width: 100%;
+    max-width: 40rem;
+    height: 4rem;
+    padding: 5px;
+    outline: none;
+    border: none;
+    box-shadow: inset 0 0 15px 15px rgba(0, 0, 0, 0.2);
+    font-family: 'Lora', sans-serif;
+    font-weight: 500;
+}
+.username-input input::placeholder {
+    font-family: "Lora", serif;
+}
+.username-input button {
+    height: 4rem;
+    outline: none;
+    border: none;
+    background: darkgreen;
+    color: white;
+    padding: 0 1rem;
+    font-family: "Lora", serif;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .username-input input {
+        width: 100%;
+    }
+}
+
+/* || chat container styling */
+.chat-container {
+    flex-basis: 30rem;
+    border-left: 1px solid black;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+.chat-container h2 {
+    margin-bottom: 1rem;
+}
+.message-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+.message {
+    margin-bottom: 10px;
+}
+#messageInput {
+    width: calc(100% - 60px);
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Add a container for the controls */
+.video-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+/* Style all control buttons consistently */
+.video-controls button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    background: rgb(236, 8, 202);
+    cursor: pointer;
+}
+
+/* Remove specific call button styling */
+.call {
+    width: auto;
+    height: auto;
+    border-radius: 4px;
+    margin: 0;
+    box-shadow: none;
+}

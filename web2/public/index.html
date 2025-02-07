@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Calling App</title>
+    <link rel="stylesheet" href="/web2/css/style.css">
+    <script src="/web2/js/socket.io.js" defer></script>
+    <script src="/web2/js/main.js" defer></script>
+    <script src="/web2/js/socket-handler.js" defer></script>
+    <style>
+        .username-input {
+            text-align: center;
+        }
+        .center-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .video-call-container {
+            width: auto;
+            padding: 1rem;
+        }
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .video-call-container {
+                order: 3;
+                width: 100%;
+            }
+            .video-streams {
+                flex-direction: column;
+                align-items: center;
+            }
+            .local-video,
+            .remote-video {
+                width: 100%;
+                max-height: 30rem;
+            }
+            .username-input {
+                order: 2;
+                width: 100%;
+                padding: 0 1rem;
+            }
+            .caller-list-wrapper {
+                order: 1;
+                width: 100%;
+                padding: 0 1rem;
+            }
+            .chat-container {
+                order: 4;
+                width: 100%;
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <aside class="caller-list-wrapper">
+            <h1 class="caller-list-heading h-font">Contacts</h1>
+            <ul id="allusers" class="caller-list">
+            </ul>
+        </aside>
+        <section class="video-call-container">
+            <div>
+                <h1 style="text-align: center;">DR.Physio</h1>
+            </div>    
+            <div class="username-input">
+                <input id="username" type="text" placeholder="Enter Username">
+                <button id="create-user" class="center-button">Create</button>
+                <h2 style="text-align: center;">First enter your name and create a room</h2>
+            </div>
+            <div style="text-align: center;">
+                <h3>When another user join the room, you will be notified</h3>
+            </div>
+            <div class="video-streams">
+                <div class="local-video">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                </div>
+                <div class="remote-video">
+                    <video id="remoteVideo" autoplay muted playsinline></video>
+                </div>
+            </div>
+            <div class="video-controls">
+                <button id="end-call-btn" class="call call-disconnect d-none">End Call</button>
+                <button id="mute-btn">Mute</button>
+                <button id="video-btn">Stop Video</button>
+                <button id="switch-camera-btn">Switch Camera</button>
+            </div>
+        </section>
+        <section class="chat-container">
+            <h2>Chat</h2>
+            <div id="messageContainer" class="message-container"></div>
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+            <input type="file" id="fileInput">
+            <button onclick="sendFile()">Send File</button>
+        </section>
+    </main>
+
+    <script>
+        // Move username input above video container in mobile view
+        if (window.innerWidth <= 768) {
+            const usernameInput = document.querySelector('.username-input');
+            const videoCallContainer = document.querySelector('.video-call-container');
+            videoCallContainer.parentNode.insertBefore(usernameInput, videoCallContainer);
+        }
+    </script>
+</body>
+</html>
