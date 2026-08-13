@@ -6,20 +6,17 @@ import { fileURLToPath } from 'url';
 import open from 'open';
 import { Server } from 'socket.io';
 import { existsSync } from 'fs';
-import { writeFile, readFile } from 'fs/promises';
+import { writeFile, readFile, mkdir } from 'fs/promises';
 import { createObjectCsvWriter } from 'csv-writer';
 import schedule from 'node-schedule';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const socketHandlerPath = join(__dirname, 'web1/public/js/socket-handler.js');
-console.log('Checking path:', socketHandlerPath);
-console.log('File exists:', existsSync(socketHandlerPath));
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const server = createServer(app);
 const mainPort = process.env.PORT || 3000;
-const USERS_FILE = './users.json';
+const USERS_FILE = join(__dirname, 'users.json');
 const sessions = {};
 const io = new Server(server);
 const roomOTPs = {
@@ -49,6 +46,12 @@ function generateAndSendOTPs() {
   roomOTPs.web1 = generateOTP();
   roomOTPs.web2 = generateOTP();
 
+  console.log(`\n=========================================`);
+  console.log(`🔑 Active Room OTPs:`);
+  console.log(`   👉 Room 1 (web1): ${roomOTPs.web1}`);
+  console.log(`   👉 Room 2 (web2): ${roomOTPs.web2}`);
+  console.log(`=========================================\n`);
+
   const mailOptions = {
     from: '106.nerd@gmail.com',
     to: 'tirthnarwal5@gmail.com',
@@ -58,7 +61,7 @@ function generateAndSendOTPs() {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error('Error sending OTP email:', error);
+      console.error('Error sending OTP email (network/auth):', error.message);
     } else {
       console.log('OTP email sent:', info.response);
     }
@@ -77,7 +80,7 @@ const appointments = [];
 
 // CSV writer setup
 const csvWriter = createObjectCsvWriter({
-  path: 'appointments.csv',
+  path: join(__dirname, 'appointments.csv'),
   header: [
     { id: 'doctor', title: 'Doctor' },
     { id: 'name', title: 'Name' },
@@ -284,6 +287,25 @@ app.post('/logout', (req, res) => {
   res.json({ success: true });
 });
 
+// Change password endpoint
+app.post('/change-password', async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+    const users = await loadUsers();
+    if (users[email] && users[email].password === currentPassword) {
+      users[email].password = newPassword;
+      await saveUsers(users);
+      return res.json({ success: true });
+    }
+    res.json({ success: false, message: 'Invalid current password' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 const allusers = {};
 // Add Socket.IO event handlers
 io.on('connection', (socket) => {
@@ -373,7 +395,12 @@ app.get('/', (req, res) => {
 app.post('/feedback', async (req, res) => {
   try {
     const { feedback } = req.body;
-    const feedbackPath = join(__dirname, 'feedback', 'feedback.txt');
+    const feedbackDir = join(__dirname, 'feedback');
+    const feedbackPath = join(feedbackDir, 'feedback.txt');
+
+    if (!existsSync(feedbackDir)) {
+      await mkdir(feedbackDir, { recursive: true });
+    }
 
     // Append feedback with timestamp
     const feedbackEntry = `${new Date().toISOString()}: ${feedback}\n`;
@@ -401,6 +428,7 @@ const createWebRoutes = (webName, port) => {
 createWebRoutes('web1', 9001);
 createWebRoutes('web2', 9002);
 server.listen(mainPort, () => {
-  console.log(`Main server running at http://localhost:${mainPort}`);
+  console.log(`🩺 Main server running at http://localhost:${mainPort}`);
+  generateAndSendOTPs();
   open(`http://localhost:${mainPort}`);
 });

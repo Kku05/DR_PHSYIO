@@ -10,8 +10,8 @@
     "socket.io": "^4.8.1"
   },
   "scripts": {
-    "prestart": "npm run install-all",
     "start": "node main.js",
-    "install-all": "npm install && cd web1 && npm install && cd ../web2 && npm install"
+    "setup": "npm install && cd web1 && npm install && cd ../web2 && npm install",
+    "install-all": "npm run setup"
   }
 }
