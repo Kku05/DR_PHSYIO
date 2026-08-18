@@ -1,66 +1,88 @@
 # 🩺 DR. PHYSIO - Tele-Physiotherapy Platform
 
-A full-stack Node.js and WebRTC-based tele-physiotherapy platform designed for seamless remote doctor-patient consultations, appointment scheduling, and diagnosis sharing.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B%20%7C%20v22%20LTS-green.svg)](https://nodejs.org/)
+[![WebRTC](https://img.shields.io/badge/WebRTC-Peer--to--Peer-blue.svg)](https://webrtc.org/)
+[![macOS Compatible](https://img.shields.io/badge/macOS-Sonoma%20%7C%20Sequoia%20%7C%20Apple%20Silicon-orange.svg)](file:///Users/tirth/Downloads/my%20project/DR_PHSYIO_oldVersion/MAC_SETUP.md)
+
+A full-stack Node.js and WebRTC-based tele-physiotherapy platform designed for seamless remote doctor-patient consultations, interactive video calls, automated appointment scheduling, and diagnosis sharing.
 
 ---
 
 ## 📋 Table of Contents
-1. [Project Overview & Key Features](#-project-overview--key-features)
-2. [macOS System Requirements](#-macos-system-requirements)
-3. [macOS Quickstart Guide](#-macos-quickstart-guide)
-4. [User Accounts & OTP Access](#-user-accounts--otp-access)
-5. [macOS Camera & Microphone Permissions](#-macos-camera--microphone-permissions)
-6. [Project Structure](#-project-structure)
-7. [Git Workflow on macOS](#-git-workflow-on-macos)
+1. [🌟 Key Features](#-key-features)
+2. [💻 System Requirements](#-system-requirements)
+3. [🚀 Quickstart Guide](#-quickstart-guide)
+4. [🧪 Testing & Verification](#-testing--verification)
+5. [🔑 User Accounts & OTP Access](#-user-accounts--otp-access)
+6. [📹 Camera & Microphone Permissions](#-camera--microphone-permissions)
+7. [📁 Project Structure](#-project-structure)
+8. [📜 License & Compliance](#-license--compliance)
 
 ---
 
-## 🌟 Project Overview & Key Features
+## 🌟 Key Features
 
-- **Peer-to-Peer Video Consultations (WebRTC):** Direct audio/video streaming between doctor and patient with camera switching and audio mute controls.
-- **Dual Room Support (`web1` & `web2`):** Multi-room routing for Dr. Smith (Room 1) and Dr. Jones (Room 2).
-- **OTP Security System:** Room access is protected by dynamic 6-digit OTPs generated on startup, hourly, and 5 minutes prior to scheduled appointments.
-- **Appointment Scheduling:** Interactive booking system with date/time availability checks and persistence in `appointments.csv`.
-- **Live In-Call Chat & File Sharing:** Real-time text chat and image file sharing (up to 900KB) during video calls.
+- **Peer-to-Peer Video Consultations (WebRTC):** Direct audio/video streaming between doctor and patient with camera switching (front/back/USB) and audio mute controls.
+- **Dual Room Isolation (`web1` & `web2`):** Multi-room routing for Dr. Smith (Room 1) and Dr. Jones (Room 2) with room-scoped WebRTC signaling.
+- **OTP Security Barrier:** Room access is protected by dynamic 6-digit OTPs generated on startup, rotated hourly, and dispatched 5 minutes prior to scheduled appointments.
+- **Appointment Scheduling:** Interactive booking system with date/time collision prevention and persistence in `appointments.csv`.
+- **In-Call Chat & Media Transfer:** Instant text messaging and image file sharing (up to 900KB) during live consultations.
 - **User Authentication:** Sign up, login, session management, and password update functionality stored in `users.json`.
-- **Feedback System:** Patient feedback submission logged automatically with timestamps to `feedback/feedback.txt`.
+- **Patient Feedback System:** Feedback submission logged automatically with ISO timestamps to `feedback/feedback.txt`.
+- **Post-Consultation Diagnosis:** Direct redirection upon call conclusion to diagnostic guides and physiotherapy exercises (`Dignosis.html`).
 
 ---
 
-## 💻 macOS System Requirements
+## 💻 System Requirements
 
-- **Operating System:** macOS Monterey (12.0) or newer (Apple Silicon M1/M2/M3/M4 or Intel).
-- **Node.js:** `v18.0.0` or newer (Tested and verified on Node `v22.x`).
+- **Operating System:** macOS Monterey (12.0+), macOS Sonoma / Sequoia (Apple Silicon M1-M4 or Intel), Linux, or Windows 10/11.
+- **Node.js:** `v18.0.0` or newer (Tested and verified on Node `v22.x LTS`).
 - **Package Manager:** `npm` (`v9.x` or `v10.x`).
-- **Web Browser:** Google Chrome, Safari, Brave, or Firefox with WebRTC support.
-- **Default Port:** `3000` (Can be customized via `PORT=3000`).
+- **Web Browser:** Chrome 90+, Safari 15+, Edge 90+, or Firefox 90+ with WebRTC support.
+- **Detailed Specifications:** See [REQUIREMENTS.md](file:///Users/tirth/Downloads/my%20project/DR_PHSYIO_oldVersion/REQUIREMENTS.md).
 
 ---
 
-## 🚀 macOS Quickstart Guide
+## 🚀 Quickstart Guide
 
-### 1. Open Terminal and navigate to the project directory:
+### 1. Clone & Navigate to Project:
 ```bash
 cd "/Users/tirth/Downloads/my project/DR_PHSYIO_oldVersion"
 ```
 
-### 2. Install Dependencies (First time only):
+### 2. Install Dependencies:
 ```bash
-npm install
+npm run setup
+```
+*(Or `npm install`)*
+
+### 3. Run Self-Checks & Tests:
+```bash
+npm test
 ```
 
-### 3. Start the Application:
+### 4. Start the Application:
 ```bash
 npm start
 ```
-The server will boot up and automatically launch `http://localhost:3000` in your default macOS browser.
+The server will start on port `3000` and automatically open `http://localhost:3000` in your default browser.
+
+---
+
+## 🧪 Testing & Verification
+
+The project includes an assert-based zero-dependency self-test suite:
+```bash
+npm test
+```
+This tests server initialization, static routing (`/`, `/web1`, `/web2`), authentication flows (signup/login/password change), appointment scheduling, CSV writes, OTP verification, and feedback logging.
 
 ---
 
 ## 🔑 User Accounts & OTP Access
 
-### Registered Test Accounts (`users.json`)
-You can log in with any of the following accounts or click **Sign Up** on the login page:
+### Pre-Configured Test Accounts (`users.json`)
 
 | Name | Email (Username) | Password |
 | :--- | :--- | :--- |
@@ -69,7 +91,7 @@ You can log in with any of the following accounts or click **Sign Up** on the lo
 | **narwal** | `narwalkku8@gmail.com` | `asdfghjkl` |
 
 ### Room OTPs
-- When `npm start` is executed, the active 6-digit OTPs are automatically generated and **printed in the macOS Terminal**:
+- When the server starts, active 6-digit OTPs are printed to your terminal:
   ```text
   =========================================
   🔑 Active Room OTPs:
@@ -81,15 +103,13 @@ You can log in with any of the following accounts or click **Sign Up** on the lo
 
 ---
 
-## 📹 macOS Camera & Microphone Permissions
+## 📹 Camera & Microphone Permissions
 
-When you first join a video room, your browser will ask for camera and microphone permissions:
-
-1. Click **"Allow"** when prompted in the browser.
-2. If video does not appear, ensure macOS system-level permissions are granted:
-   - Open **System Settings** (Apple menu  $\rightarrow$ System Settings).
-   - Go to **Privacy & Security** $\rightarrow$ **Camera** and enable your browser.
-   - Go to **Privacy & Security** $\rightarrow$ **Microphone** and enable your browser.
+When joining a video room, allow browser media permissions when prompted.
+On macOS:
+1. Open **System Settings** $\rightarrow$ **Privacy & Security**.
+2. Enable your browser under **Camera** and **Microphone**.
+3. For more details, consult [MAC_SETUP.md](file:///Users/tirth/Downloads/my%20project/DR_PHSYIO_oldVersion/MAC_SETUP.md).
 
 ---
 
@@ -97,11 +117,16 @@ When you first join a video room, your browser will ask for camera and microphon
 
 ```text
 DR_PHSYIO_oldVersion/
-├── main.js                  # Main Express & Socket.IO backend server
-├── package.json             # Root dependencies and scripts
+├── main.js                  # Main Express & Socket.IO signaling server
+├── test.js                  # Zero-dependency assert test runner
+├── package.json             # Root dependencies and npm scripts
 ├── users.json               # Local JSON user credential database
 ├── appointments.csv         # CSV database storing appointment bookings
-├── .gitignore               # Configured with macOS (.DS_Store) & env rules
+├── LICENSE                  # Open-source MIT License
+├── README.md                # Main project documentation
+├── REQUIREMENTS.md          # Formal software and hardware specifications
+├── MAC_SETUP.md             # macOS installation and troubleshooting guide
+├── PROJECT_OVERVIEW.md      # Comprehensive architecture & API reference
 ├── feedback/                # Feedback storage directory
 │   └── feedback.txt         # Timestamped patient feedback logs
 ├── public/                  # Main platform frontend pages
@@ -126,24 +151,11 @@ DR_PHSYIO_oldVersion/
 
 ---
 
-## 🛠️ Git Workflow on macOS
+## 📜 License & Compliance
 
-### Check status:
-```bash
-git status
-```
+This project is licensed under the **[MIT License](file:///Users/tirth/Downloads/my%20project/DR_PHSYIO_oldVersion/LICENSE)**.
 
-### Save and push changes to a feature branch:
-```bash
-# 1. Create and switch to a branch
-git checkout -b update-feature
-
-# 2. Stage all updated files
-git add .
-
-# 3. Commit with a message
-git commit -m "Update project for macOS compatibility"
-
-# 4. Push to GitHub
-git push origin update-feature
-```
+### Dependency License Audit
+All third-party libraries used in this project are licensed under permissive open-source terms:
+- **Express, Socket.IO, Nodemailer, Node-Schedule, CSV-Writer, Open:** MIT / ISC / BSD-3-Clause.
+- **Zero Copyleft Restrictions:** No GPL, AGPL, or restrictive licenses are present. You are free to publish, host, and fork this project on GitHub without licensing violations.

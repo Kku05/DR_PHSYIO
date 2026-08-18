@@ -1,10 +1,10 @@
-# 🍏 macOS Setup & System Requirements Guide
+# 🍏 macOS Setup & Operational Guide
 
-This guide provides step-by-step instructions for configuring, running, and troubleshooting **DR. PHYSIO** on macOS (Apple Silicon M1/M2/M3/M4 and Intel Macs).
+This guide provides complete instructions for configuring, running, testing, and troubleshooting **DR. PHYSIO** on macOS (Apple Silicon M1/M2/M3/M4 and Intel Macs).
 
 ---
 
-## 📋 System Requirements
+## 📋 System Requirements Checklist
 
 | Requirement | Minimum Specification | Recommended |
 | :--- | :--- | :--- |
@@ -43,16 +43,33 @@ cd "/Users/tirth/Downloads/my project/DR_PHSYIO_oldVersion"
 ---
 
 ### 3. Install Project Dependencies
-Run the install command inside the project directory:
+Run the install command to install root and sub-application dependencies:
 ```bash
-npm install
+npm run setup
+```
+*(Or simply `npm install`)*
+
+---
+
+### 4. Run Automated Self-Checks & Tests
+Verify that all API routes, authentication logic, database persistence, and Socket.IO handlers are operational:
+```bash
+npm test
+```
+**Expected Output:**
+```text
+> test
+> node test.js
+
+🚀 Starting DR. PHYSIO self-check on macOS...
+✅ All DR. PHYSIO self-checks passed successfully on macOS!
 ```
 
 ---
 
-### 4. Grant macOS Camera & Microphone Permissions
+### 5. Grant macOS Camera & Microphone Permissions
 
-WebRTC peer-to-peer video requires camera and microphone permissions on macOS.
+WebRTC peer-to-peer video requires camera and microphone permissions on macOS:
 
 1. Open **System Settings** (Apple Menu  $\rightarrow$ **System Settings**).
 2. Go to **Privacy & Security** in the sidebar.
@@ -79,7 +96,7 @@ When started, your terminal will display:
    👉 Room 2 (web2): 839201
 =========================================
 ```
-The application will automatically open `http://localhost:3000` in your default browser.
+The application will automatically open `http://localhost:3000` in your default macOS browser.
 
 ### Stop the Server:
 Press `Ctrl + C` in the Terminal window.
@@ -95,10 +112,17 @@ lsof -ti :3000 | xargs kill -9
 ```
 Then run `npm start` again.
 
+### Custom Port or Headless Mode
+- Start on a custom port: `PORT=4000 npm start`
+- Start without popping up the browser window: `NO_OPEN=1 npm start`
+
 ### Camera / Microphone not loading in Video Room
-- Ensure no other app (FaceTime, Zoom, Photobooth) is locking the webcam.
+- Ensure no other app (FaceTime, Zoom, Photo Booth) is locking the webcam.
 - In Chrome, click the camera icon on the right side of the URL address bar and verify that the correct camera input is selected.
 - In Safari, go to **Safari $\rightarrow$ Settings $\rightarrow$ Websites $\rightarrow$ Camera** and set `localhost` to **Allow**.
 
 ### File not found error (`ENOENT: no such file or directory`)
-Ensure you are inside the `DR_PHSYIO_oldVersion` subfolder and not the parent `my project` directory before running `npm start`.
+Ensure you are inside the `DR_PHSYIO_oldVersion` folder before executing commands:
+```bash
+cd "/Users/tirth/Downloads/my project/DR_PHSYIO_oldVersion"
+```

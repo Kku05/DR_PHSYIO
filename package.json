@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "node main.js",
+    "test": "node test.js",
     "setup": "npm install && cd web1 && npm install && cd ../web2 && npm install",
     "install-all": "npm run setup"
   }

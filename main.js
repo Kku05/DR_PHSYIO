@@ -28,11 +28,15 @@ const rooms = {
   web2: {}
 };
 
+const SENDER_EMAIL = process.env.EMAIL_USER || '106.nerd@gmail.com';
+const SENDER_PASS = process.env.EMAIL_PASS || 'qpwp hwvg jzhs thqr';
+const DOCTOR_EMAIL = process.env.DOCTOR_EMAIL || 'tirthnarwal5@gmail.com';
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: '106.nerd@gmail.com',
-    pass: 'qpwp hwvg jzhs thqr' // Use app-specific password
+    user: SENDER_EMAIL,
+    pass: SENDER_PASS
   }
 });
 
@@ -53,8 +57,8 @@ function generateAndSendOTPs() {
   console.log(`=========================================\n`);
 
   const mailOptions = {
-    from: '106.nerd@gmail.com',
-    to: 'tirthnarwal5@gmail.com',
+    from: SENDER_EMAIL,
+    to: DOCTOR_EMAIL,
     subject: 'New Room OTPs',
     text: `New OTPs for rooms:\nRoom 1: ${roomOTPs.web1}\nRoom 2: ${roomOTPs.web2}`
   };
@@ -120,8 +124,8 @@ app.post('/appointment', async (req, res) => {
 
   // Determine the room based on the doctor
   const doctorEmails = {
-    dr_smith: 'tirthnarwal5@gmail.com',
-    dr_jones: 'tirthnarwal5@gmail.com'
+    dr_smith: DOCTOR_EMAIL,
+    dr_jones: DOCTOR_EMAIL
   };
   const room = doctor === 'dr_smith' ? 'web1' : 'web2';
   const doctorEmail = doctorEmails[doctor];
@@ -129,7 +133,7 @@ app.post('/appointment', async (req, res) => {
 
   // Send confirmation email to the user
   const userMailOptions = {
-    from: '106.nerd@gmail.com',
+    from: SENDER_EMAIL,
     to: email,
     subject: 'Appointment Confirmation',
     text: `Dear ${name},\n\nYour appointment with ${doctorName} is confirmed for ${date} at ${time}.\n\nThank you!`
@@ -145,7 +149,7 @@ app.post('/appointment', async (req, res) => {
 
   // Send confirmation email to the doctor
   const doctorMailOptions = {
-    from: '106.nerd@gmail.com',
+    from: SENDER_EMAIL,
     to: doctorEmail,
     subject: 'New Appointment Booked',
     text: `Dear ${doctorName},\n\nA new appointment has been booked by ${name} for ${date} at ${time}.\n\nThank you!`
@@ -167,7 +171,7 @@ app.post('/appointment', async (req, res) => {
   schedule.scheduleJob(appointmentDate, () => {
     const otp = roomOTPs[room];
     const otpMailOptions = {
-      from: '106.nerd@gmail.com',
+      from: SENDER_EMAIL,
       to: `${email}, ${doctorEmail}`,
       subject: 'Room OTP',
       text: `Dear ${name},\n\nYour OTP for the room ${room} is ${otp}.`
@@ -190,7 +194,7 @@ app.post('/appointment', async (req, res) => {
 
     // Send cancellation email to the user
     const cancellationMailOptions = {
-      from: '106.nerd@gmail.com',
+      from: SENDER_EMAIL,
       to: canceledAppointment.email,
       subject: 'Appointment Canceled',
       text: `Dear ${canceledAppointment.name},\n\nYour appointment with ${doctorName} on ${date} at ${time} has been canceled due to multiple bookings. Please book again.\n\nThank you!`
@@ -306,7 +310,6 @@ app.post('/change-password', async (req, res) => {
   }
 });
 
-const allusers = {};
 // Add Socket.IO event handlers
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -351,8 +354,8 @@ io.on('connection', (socket) => {
 
   // For end-call event
   socket.on("end-call", ({ from, to }) => {
-    if (allusers[to]) {
-      io.to(allusers[to].id).emit("end-call", { from, to });
+    if (currentRoom && rooms[currentRoom]?.[to]) {
+      io.to(rooms[currentRoom][to].id).emit("end-call", { from, to });
     }
   });
 
@@ -371,8 +374,8 @@ io.on('connection', (socket) => {
 
   // In main.js
   socket.on('icecandidate', ({ candidate, to }) => {
-    if (allusers[to]) {
-      io.to(allusers[to].id).emit('icecandidate', candidate);
+    if (currentRoom && rooms[currentRoom]?.[to]) {
+      io.to(rooms[currentRoom][to].id).emit('icecandidate', candidate);
     }
   });
 
@@ -430,5 +433,7 @@ createWebRoutes('web2', 9002);
 server.listen(mainPort, () => {
   console.log(`🩺 Main server running at http://localhost:${mainPort}`);
   generateAndSendOTPs();
-  open(`http://localhost:${mainPort}`);
+  if (!process.env.NO_OPEN) {
+    open(`http://localhost:${mainPort}`);
+  }
 });
